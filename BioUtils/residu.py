@@ -43,7 +43,7 @@ def AA1toAA3(aa, verbose=True):
         return("TYR")
     else :
         if verbose :
-            print >>sys.stderr, "The amino acid ",aa," is unknown!" 
+            print("The amino acid {} is unknown!".format(aa), file=sys.stderr)
         return "UNK"
 
 def AA3toAA1(aa, verbose=True):
@@ -115,10 +115,12 @@ def AA3toAA1(aa, verbose=True):
     elif (aa == 'XLE' ) : #  leucine or isoleucine
         return "L"    # or I
     elif (aa == 'XAA') : #  unspecified or unknown
-        return X    
+        return "X"
+    elif (aa == 'UNK'):
+        return "X"
     else :
         if verbose :
-            print >>sys.stderr, "The amino acid ",aa," is unknown!" 
+            print("The amino acid {} is unknown!".format(aa), file=sys.stderr)
         return "X"
         #raise ValueError( "The amino acid ",aa," is unknown!" )        
 
@@ -137,10 +139,27 @@ chargedPlus = ["ARG", "LYS"]
 hydrophilic = ['GLN', 'ASN', 'LYS', 'ASP', 'ARG', 'GLU']
 chargedPlusExtended = chargedPlus+["HIS"]
 aromatic = ["PHE", "TRP", "TYR", "HIS" ]
-all = ['CYS', 'GLN', 'ILE', 'SER', 'VAL', 'GLY', 'ASN', 'PRO', 'LYS', 'ASP', 'THR', 'PHE', 'ALA', 'MET', 'HIS', 'LEU', 'ARG', 'TRP', 'GLU', 'TYR', 'UNK']
 
-AA3 = ['CYS', 'GLN', 'ILE', 'SER', 'VAL', 'GLY', 'ASN', 'PRO', 'LYS', 'ASP', 'THR', 'PHE', 'ALA', 'MET', 'HIS', 'LEU', 'ARG', 'TRP', 'GLU', 'TYR', 'UNK']
-AA1 = [ AA3toAA1(aa, verbose=False) for aa in AA3 ]
+_AA3 = {"all": ['CYS', 'GLN', 'ILE', 'SER', 'VAL', 'GLY', 'ASN', 'PRO', 'LYS', 'ASP', 'THR', 'PHE', 'ALA', 'MET', 'HIS', 'LEU', 'ARG', 'TRP', 'GLU', 'TYR', 'UNK'],
+        "classic": ['CYS', 'GLN', 'ILE', 'SER', 'VAL', 'GLY', 'ASN', 'PRO', 'LYS', 'ASP', 'THR', 'PHE', 'ALA', 'MET', 'HIS', 'LEU', 'ARG', 'TRP', 'GLU', 'TYR'],
+        }
+
+_AA1 = {"all": [AA3toAA1(aa) for aa in _AA3["all"]],
+        "classic": [AA3toAA1(aa) for aa in _AA3["classic"]],
+        }
+
+def AA3(mode="all"):
+    if mode in _AA3:
+        return _AA3[mode]
+    else:
+        print("Error, mode={} not found. Choose between: {}".format(mode, "/".join(list(_AA3.keys()))), file=sys.stderr)
+
+
+def AA1(mode="all"):
+    if mode in _AA1:
+        return _AA1[mode]
+    else:
+        print("Error, mode={} not found. Choose between: {}".format(mode, "/".join(list(_AA1.keys()))), file=sys.stderr)
 
 dicAA1Type = {
   "hydrophobic" : ["V","I", "L", "M", "F", "W", "C", "Y", "H", "T" ],
