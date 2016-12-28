@@ -36,7 +36,7 @@ def compute_offset_pos(seq, pos):
         #print(pos, cnt, k, seq)
     return k
 
-def compute_offset_pos(seq, pos):
+def compute_revoffset_pos(seq, pos):
     """ from a MSA sequence, computes the corresponding position in the sequence without gaps
     
     Parameters
