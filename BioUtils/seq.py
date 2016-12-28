@@ -56,7 +56,7 @@ def compute_offset_pos(seq, pos):
     for c in seq:
         if c in msa_characters:
             cnt += 1
-    return pos - c
+    return pos - cnt
 
 def compute_pos_seq2msa(seq, start, stop):
     """ from a start and stop positions of a sequence without gaps, computes the corresponding position in a MSA
