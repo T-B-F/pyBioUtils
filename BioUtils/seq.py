@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 
+from Bio import AlignIO
+import gzip, io, os
+
 msa_characters = ["-", "?", "!", "*", "."]
 
 def transform_seq(seq):
@@ -104,4 +107,3 @@ def compute_pos_msa2seq(seq, start, stop):
     new_start = compute_revoffset_pos(seq, start)
     new_stop = compute_revoffset_pos(seq, stop)
     return new_start, new_stop
-
