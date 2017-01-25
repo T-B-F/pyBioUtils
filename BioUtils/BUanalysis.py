@@ -10,6 +10,8 @@ def profile(seq, elmt=None, window=10, stride=10):
     
     if isinstance(elmt, set):
         elmts = list(elmt)
+    elif isinstance(elmt, list):
+        elmts = elmt[:]
     elif not isinstance(elmt, list):
         elmts = [elmt]
     else:
@@ -19,7 +21,11 @@ def profile(seq, elmt=None, window=10, stride=10):
     mean = dict()
     size = len(seq)
     for elmt in elmts:
-        cnt = seq.count(elmt)
+        cnt = 0
+        for s in seq:
+            if s in elmt:
+                cnt += 1
+        #cnt = seq.count(elmt)
         if cnt == 0:
             print("Warning, element {} not found in sequence".format(elmt))
         else:
@@ -35,7 +41,7 @@ def profile(seq, elmt=None, window=10, stride=10):
             cnt = 0
             for j in range(x, y):
                 if j >= 0 and j < len(seq):
-                    if seq[j] == elmt:
+                    if seq[j] in elmt:
                         cnt += 1
                     valid += 1
             profiles.setdefault(elmt, list()).append((cnt/valid)-mean[elmt])
