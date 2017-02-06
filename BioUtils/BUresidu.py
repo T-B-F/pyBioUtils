@@ -199,7 +199,7 @@ dpdb_freq = {"A": 0.0859929227395,
 
 class Frequency(object):
     
-    def __init__(self, name):
+    def __init__(self, name=""):
         self._name = name
         if self._name == "uniform":
             self._aa = AA1(mode="classic")
@@ -222,7 +222,25 @@ class Frequency(object):
                 self._aa.append(tmp[0])
                 self._freq.append(float(tmp[1]))
         self._freq = np.array(self._freq)
+        self._normalize()
+        
+    def _normalize(self):
         self._freq /= self._freq.sum()
+    
+    def todict(self):
+        freq = dict()
+        for i, aa in enumerate(self._aa):
+            freq[aa] = self._freq[i]
+        return freq
+    
+    def from_dict(self, data):
+        """ upload frequency from dictionary
+        """
+        for aa in data:
+            self._aa.append(aa)
+            self._freq.append(data[aa])
+        self._freq = np.array(self._freq)
+        self._normalize()
         
     def sequence(self, size, N=1):
         """ generate N random sequence of size "size" using the set of amino acids in aa
