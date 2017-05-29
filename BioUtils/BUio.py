@@ -54,34 +54,6 @@ def read_fastabioit(path):
             for record in SeqIO.parse(handle, "fasta"):
                 yield record
 
-def read_pfam(path, slct_dom=None, slct_prot=None, keep_pfamb=True, pos="ali"):
-    """ read annotation
-    """
-    data = {}
-    with open(path) as inf:
-        for line in inf:
-            if line[0] != "#" and line[0] != "\n":
-                tmp = line.split()
-                prot = tmp[0]
-                if keep_pfamb or tmp[7] != "Pfam-B":
-                    if pos == "ali":
-                        start, stop = int(tmp[1])-1, int(tmp[2])
-                    else:
-                        start, stop = int(tmp[3])-1, int(tmp[4])
-                    dom = tmp[5].split(".")[0]
-                    if not slct_prot or prot in slct_prot:
-                        data.setdefault(prot, []).append((start, stop, dom))
-    if slct_dom:
-        prots = data.keys()
-        for prot in prots:
-            keep=False
-            for start, stop, dom in data[prot]:
-                if dom in slct_dom:
-                    keep = True
-            if not keep:
-                del data[prot] 
-    return data 
-
 def prefix_file(path):
     return os.path.splitext(os.path.basename(path))[0]
 
@@ -111,3 +83,46 @@ def read_twocols(path):
             tmp = line.split()
             data.setdefault(tmp[0], []).append(tmp[1])
     return data
+
+
+def read_domains(path, **kwargs):
+    """ read protein domain results
+    """
+    if "format" not in kwargs:
+        fnct = read_pfam
+    else:
+        if kwargs["format"] == "pfam":
+            fnct = read_pfam
+        #elif kwargs["format"] == "hmmer":
+            #fnct = read_hmmer
+        else:
+            raise ValueError("Unknown method {} passed to read_domains fucntion".format(kwargs["format"]))
+    return fnct(path, kwargs)
+
+def read_pfam(path, slct_dom=None, slct_prot=None, keep_pfamb=True, pos="ali"):
+    """ read pfam domain annotation
+    """
+    data = {}
+    with open(path) as inf:
+        for line in inf:
+            if line[0] != "#" and line[0] != "\n":
+                tmp = line.split()
+                prot = tmp[0]
+                if keep_pfamb or tmp[7] != "Pfam-B":
+                    if pos == "ali":
+                        start, stop = int(tmp[1])-1, int(tmp[2])
+                    else:
+                        start, stop = int(tmp[3])-1, int(tmp[4])
+                    dom = tmp[5].split(".")[0]
+                    if not slct_prot or prot in slct_prot:
+                        data.setdefault(prot, []).append((start, stop, dom))
+    if slct_dom:
+        prots = data.keys()
+        for prot in prots:
+            keep=False
+            for start, stop, dom in data[prot]:
+                if dom in slct_dom:
+                    keep = True
+            if not keep:
+                del data[prot] 
+    return data 
