@@ -27,15 +27,40 @@ def compute_offset_pos(seq, pos):
     k : int
         the position in the MSA
     """
-
-    k = 0 
-    cnt = 0 #if seq[k] not in msa_characters else -1
-    while cnt != pos and k < len(seq):
-        if seq[k] not in msa_characters:
+    
+    maps = dict()
+    cnt = 0
+    maxi = 0
+    for i in range(len(seq)):
+        if seq[i] not in msa_characters:
+            maps[i-cnt] = i
+            maxi = i
+        else:
             cnt += 1
-        k += 1 
-        #print(pos, cnt, k, seq)
-    return k
+    return maps.get(pos, maxi)
+    
+    #cnt = 0
+    #k = 0
+    #while k<len(seq):
+        #print(k, cnt, seq[k])
+        #offset = 0
+        #while k+offset < len(seq) and seq[k+offset] in msa_characters:
+            #offset += 1
+        #else:
+            #cnt += 1
+        #k+=offset+1
+        #if cnt == pos:
+            #break
+    #return k
+        
+    #k = 0 
+    #cnt = 0 if seq[k] not in msa_characters else -1
+    #while cnt != pos and k < len(seq):
+        #if seq[k] not in msa_characters:
+            #cnt += 1
+        #k += 1 
+        ##print(pos, cnt, k, seq)
+    #return k
 
 def compute_revoffset_pos(seq, pos):
     """ from a MSA sequence, computes the corresponding position in the sequence without gaps
@@ -59,12 +84,12 @@ def compute_revoffset_pos(seq, pos):
             cnt += 1
     return pos - cnt
 
-def compute_pos_seq2msa(seq, start, stop):
+def compute_pos_seq2msa(msaseq, start, stop):
     """ from a start and stop positions of a sequence without gaps, computes the corresponding position in a MSA
     
     Parameters
     ==========
-    seq : string
+    msaseq : string
         the sequence from the MSA 
     start : int
         the position to convert
@@ -78,8 +103,8 @@ def compute_pos_seq2msa(seq, start, stop):
     new_stop : int
         the position in the MSA
     """
-    new_start = compute_offset_pos(seq, start)
-    new_stop = compute_offset_pos(seq, stop)
+    new_start = compute_offset_pos(msaseq, start)
+    new_stop = compute_offset_pos(msaseq, stop-1)+1 
     return new_start, new_stop
 
 
