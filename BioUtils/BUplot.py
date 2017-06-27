@@ -20,16 +20,18 @@ def leftaxisonly(ax):
     ax.spines['right'].set_visible(False)
     ax.spines['bottom'].set_visible(False)
     ax.set_xticks([]) 
-    
-    
-def check_dim(*args):
-    for i in range(len(args)-1):
-        if args[i] != list():
-            assert len(args[i]), len(args[i+1]), "Different size between parameters"
         
-def plot_scatter_hist(data_x, data_y, alpha=0.8, labels=list(), xlabel="", ylabel="", savefig=None):
+def check_dim(*args):
+    size = {len(args[i]) for i in range(len(args)) if args[i] != list()}
+    assert len(size) == 1, "Different size between parameters"
+    #for i in range(len(args)-1):
+        #if args[i] != list() and args[i+1] != list():
+            #assert len(args[i]) == len(args[i+1]), "Different size between parameters"
+        
+def plot_scatter_hist(data_x, data_y, alpha=0.8, labels=list(), xlabel="", ylabel="", savefig=None, show=True):
+    """ combine a scatter plot with two histograms, one for each of the axis
+    """
     check_dim(data_x, data_y, labels)
-    # TODO cheange for prop_cycle
     #colors = mpl.rcParams['axes.color_cycle']
     colors = [color['color'] for color in list(mpl.rcParams['axes.prop_cycle'])]
     nullfmt = NullFormatter()   
@@ -124,5 +126,67 @@ def plot_scatter_hist(data_x, data_y, alpha=0.8, labels=list(), xlabel="", ylabe
         
     if savefig:
         plt.savefig(savefig, dpi=600)
-    plt.show()
+    if show:
+        plt.show()
+    return [axScatter, axHistx, axHisty]
+
+def jitter_plot(data, labels=list(), xlabel=list(), ylabel="", alpha=0.5, savefig=None, show=True):
+    """ create a jitter plot
+    """
+    fig, axJitter = plt.subplots()
+    check_dim(data, labels, xlabel)
+    simpleaxis(axJitter)
     
+    indexes = np.arange(1, len(data)+1)
+    for i in range(len(data)):
+        x = np.random.rand(len(data[i])) * 0.5 + (i+1-0.25)
+        labeli=labels[i] if i < len(labels) else ""
+        axJitter.scatter(x, data[i], s=12, alpha=alpha, label=labeli)
+        ymean = sum(data[i])/len(data[i])
+        axJitter.plot([i+1-0.20, i+1.20], [ymean, ymean], linewidth=2, linestyle="--")
+    
+    axJitter.set_xticks(indexes)
+    if xlabel != list():
+        axJitter.set_xticklabels(xlabel)
+    if ylabel:
+        axBox.set_ylabel(ylabel)
+        
+    plt.xlim(0.5, len(indexes)+0.5)
+   
+    if savefig:
+        plt.savefig(savefig, dpi=600)
+    if show:
+        plt.show()
+    return axJitter
+
+def fancy_box(data, labels=list(), xlabel=list(), ylabel="", alpha=0.5, savefig=None, show=True):
+    """ make a fancy box plot -> jitter + box
+    """
+    fig, axBox = plt.subplots()
+    check_dim(data, labels, xlabel)
+    simpleaxis(axBox)
+    
+    indexes = np.arange(1, len(data)+1)
+    axBox.boxplot([y_neu, y_hdel], labels=["neutral", "highly deleterious"], showfliers="",)
+    for i in range(len(data)):
+        x = np.random.rand(len(data[i])) * 0.5 + (i+1-0.25)
+        labeli=labels[i] if i < len(labels) else ""
+        axBox.scatter(x, data[i], s=12, alpha=alpha, label=labeli)
+        #ymean = sum(data[i])/len(data[i])
+        ymean = np.median(np.array(data[i]))
+        axBox.plot([i+1-0.20, i+1.20], [ymean, ymean], linewidth=2, linestyle="--")
+    
+    axBox.set_xticks(indexes)
+    if xlabel != list():
+        axBox.set_xticklabels(xlabel)
+    
+    if ylabel:
+        axBox.set_ylabel(ylabel)
+        
+    plt.xlim(0.5, len(indexes)+0.5)
+    
+    if savefig:
+        plt.savefig(savefig, dpi=600)
+    if show:
+        plt.show()
+    return axBox
