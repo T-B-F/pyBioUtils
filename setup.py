@@ -8,7 +8,7 @@ def readme():
         return f.read()
 
 setup(name='pybioutils',
-    version='0.1',
+    version='0.2',
     description='some things that I used',
     long_description=readme(),
 
