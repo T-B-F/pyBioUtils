@@ -1,0 +1,58 @@
+#!/usr/env/bin python
+
+import sys
+
+if sys.version_info < (3, 0):
+    print("Error, python3 required")
+    sys.exit(1)
+
+import BioUtils
+
+def usage():
+    """ print usage
+    """
+    print("""
+Please use hcatk with one of the following argument:
+- 'fasta_shuffle': to shuffle a fasta sequence
+- 'fasta_split'  : to split a fasta file (either by percentage or by number of sequence)
+- 'fasta_batch'  : to create batch of fasta
+- 'fasta_convert': to convert sequence format
+- 'help'     : to display this help message
+
+
+To get help for a specific sub program use:
+hcatk <argument> -h
+""")
+    
+fnc_methods = {
+    "fasta_shuffle": BioUtils.BUscripts.fasta_shuffle, 
+    "fasta_split": BioUtils.BUscripts.fasta_split, 
+    "fasta_batch": BioUtils.BUscripts.fasta_batch, 
+    "fasta_convert": BioUtils.BUscripts.fasta_convert,
+    }
+    
+def print_exit():
+    usage()
+    return 1
+    
+def main():
+    """ Executable script for annotationHCA modules
+    """
+    ext=0
+    if len(sys.argv) < 2:
+        print("Missing program argument")
+        ext = print_exit()
+    elif sys.argv[1] not in ["fasta_shuffle", "fasta_split", "fasta_batch", "fasta_convert", "help"]:
+        print("Program argument '{}' not recognized".format(sys.argv[1]))
+        ext = print_exit()
+    elif sys.argv[1] == "help":
+        usage()
+    else:
+        method = sys.argv[1]
+        sys.argv.pop(1)
+        fnc_methods[method]()
+
+if __name__ == '__main__':
+    main()
+    
+

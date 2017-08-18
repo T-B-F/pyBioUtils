@@ -1,7 +1,15 @@
 #!/usr/bin/env python3
 
-          
+import sys          
 from setuptools import setup, find_packages
+
+__version__ = "0.1"
+
+
+if sys.version_info < (3,5):
+    print("python version must be at least 3.5")
+    sys.exit(1)
+
 
 def readme():
     with open('README.md') as f:
@@ -22,9 +30,9 @@ setup(name='pybioutils',
     author='Tristan Bitard-Feildel',
     author_email='tristan.bitard-feildel@impmc.upmc.fr',
     license='MIT',
-    scripts=['src/cut_fasta.py', 'src/cut_list.py', 'src/new_python.py',
+    scripts=['BioUtils/bin/biotk',
              ],
-    packages=find_packages(exclude=["src/"]),
+    packages=find_packages(exclude=["BioUtils/bin/", "src/"]),
     include_package_data=True,
     install_requires=['biopython>=1.68',],
     zip_safe=False,

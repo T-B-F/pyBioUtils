@@ -30,3 +30,10 @@ def compute_rmsd(coords1, coords2, return_struct=False):
         return rmsd, cp_coords1, cp_coords2
     else:
         return rmsd
+
+def compute_rmsf(coords, target):
+    """ compute fluctuation, trajectories should already been superposed
+    """
+    idx = np.arange(target.shape[0])
+    return np.sqrt(3*np.mean((coords[:, idx, :] - target) ** 2, axis=(0, 2)))
+    
