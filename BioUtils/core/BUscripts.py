@@ -128,8 +128,6 @@ def get_cmd_convert():
     parser = argparse.ArgumentParser()
     parser.add_argument("-i", "--input", action="store", dest="input", help="input sequence file")
     parser.add_argument("-o", "--outdir", action="store", dest="output", help="output sequence file")
-    parser.add_argument("-a", "--alphabet", action="store", dest="alphabet", help="sequences are either dna, rna or protein sequences")
-    parser.add_argument("--is_msa", action="store_true", dest="is_msa", help="input file is a multiple sequence alignment")
     parser.add_argument("--input_format", action="store", dest="input_format", help="input format")
     parser.add_argument("--output_format", action="store", dest="output_format", help="output format ")
     params = parser.parse_args()
@@ -139,24 +137,10 @@ def get_cmd_convert():
 def fasta_convert():
     params = get_cmd_convert()
     
-    alphabet = {"dna": Alphabet.generic_dna,
-                "rna": Alphabet.generic_rna,
-                "protein": Alphabet.generic_protein}
     
-    if params.is_msa:
-        
-        with open(params.input, "r") as inf, open(params.output, "w") as outf:
-            if params.alphabet is not None:
-                msa = AlignIO.read(inf, params.input_format, alphabet = alphabet[params.alphabet])
-            else:
-                msa = AlignIO.read(inf, params.input_format)
-            AlignIO.write(msa, outf, params.output_format)
-            
-    else:
-    
-        with open(params.input, "r") as inf, open(params.output, "w") as outf:
-            for rec in SeqIO.parse(inf, params.input_format):
-                SeqIO.write(rec, outf, params.output_format)
+    with open(params.input, "r") as inf, open(params.output, "w") as outf:
+        for rec in SeqIO.parse(inf, params.input_format):
+            SeqIO.write(rec, outf, params.output_format)
     
     sys.exit(0)
 
@@ -166,7 +150,7 @@ def get_cmd_batch():
     parser = argparse.ArgumentParser()
     parser.add_argument("-i", "--input", action="store", dest="input", help="input fasta file")
     parser.add_argument("-o", "--outdir", action="store", dest="output", help="output directory")
-    parser.add_argument("-p", "--output", action="store", dest="prefix", help="prefix of output file")
+    parser.add_argument("-p", "--prefix", action="store", dest="prefix", help="prefix of output file")
     parser.add_argument("-b", "--batch_size", action="store", dest="batch_size", help="size of batch", type=int)
     parser.add_argument("-n", "--nb_batch", action="store", dest="nb_batch", help="number of batch", type=int)
     params = parser.parse_args()
@@ -207,3 +191,69 @@ def fasta_batch():
         cnt += 1
     
     sys.exit(0)
+    
+    
+###### msa convert
+
+def get_cmd_msaconvert():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-i", "--input", action="store", dest="input", help="input sequence file")
+    parser.add_argument("-o", "--outdir", action="store", dest="output", help="output sequence file")
+    parser.add_argument("-a", "--alphabet", action="store", dest="alphabet", help="sequences are either dna, rna or protein sequences")
+    parser.add_argument("--input_format", action="store", dest="input_format", help="input format")
+    parser.add_argument("--output_format", action="store", dest="output_format", help="output format ")
+    params = parser.parse_args()
+
+    return params
+
+def msa_convert():
+    params = get_cmd_msaconvert()
+    
+    alphabet = {"dna": Alphabet.generic_dna,
+                "rna": Alphabet.generic_rna,
+                "protein": Alphabet.generic_protein}
+            
+    with open(params.input, "r") as inf, open(params.output, "w") as outf:
+        if params.alphabet is not None:
+            msa = AlignIO.read(inf, params.input_format, alphabet = alphabet[params.alphabet])
+        else:
+            msa = AlignIO.read(inf, params.input_format)
+        AlignIO.write(msa, outf, params.output_format)
+    
+    sys.exit(0)
+
+###### clean msa col
+
+def get_cmd_cleancol():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-i", "--input", action="store", dest="input", help="input MSA file")
+    parser.add_argument("--input_format", action="store", dest="input_format", help="MSA format", default="fasta")
+    parser.add_argument("-o", "--output", action="store", dest="output", help="output file")
+    params = parser.parse_args()
+
+    return params
+
+def msa_cleancol():
+    params = get_cmd_cleancol()
+    
+    with open(params.input, "r") as inf:
+        msa = AlignIO.read(inf, params.input_format)
+    
+    nb_char = len(msa[0])
+    nb_seq = len(msa)
+    
+    to_remove = list()
+    for i in range(nb_char):
+        col = msa[:, i]
+        nb_gap = col.count("-") + col.count(".")
+        if nb_gap == nb_seq:
+            to_remove.append(i)
+    
+    for offset, i in enumerate(to_remove):
+        msa = msa[:, :i-offset] + msa[:, i+1-offset:]
+          
+    with open(params.output, "w") as outf:
+        AlignIO.write(msa, outf, params.input_format)
+    
+    sys.exit(0)
+

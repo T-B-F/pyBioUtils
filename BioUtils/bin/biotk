@@ -12,25 +12,29 @@ def usage():
     """ print usage
     """
     print("""
-Please use hcatk with one of the following argument:
+Please use biotk with one of the following argument:
 - 'fasta_shuffle': to shuffle a fasta sequence
 - 'fasta_split'  : to split a fasta file (either by percentage or by number of sequence)
 - 'fasta_1line'  : to put sequence on one line
 - 'fasta_batch'  : to create batch of fasta
 - 'fasta_convert': to convert sequence format
+- 'msa_convert'  : to convert MSA format
+- 'msa_cleancol' : to remove empty columns from MSA
 - 'help'     : to display this help message
 
 
 To get help for a specific sub program use:
-hcatk <argument> -h
+biotk <argument> -h
 """)
     
 fnc_methods = {
     "fasta_shuffle": BioUtils.BUscripts.fasta_shuffle, 
     "fasta_split": BioUtils.BUscripts.fasta_split, 
     "fasta_batch": BioUtils.BUscripts.fasta_batch, 
-    "fasta_convert": BioUtils.BUscripts.fasta_convert,
     "fasta_1line"  :BioUtils.BUscripts.fasta_oneline,
+    "fasta_convert": BioUtils.BUscripts.fasta_convert,
+    "msa_convert": BioUtils.BUscripts.msa_convert,
+    "msa_cleancol": BioUtils.BUscripts.msa_cleancol,
     }
     
 def print_exit():
