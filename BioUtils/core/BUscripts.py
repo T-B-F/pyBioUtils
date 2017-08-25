@@ -1,9 +1,42 @@
 #!usr/bin/env python
 
 import BioUtils
-from Bio import SeqIO
+from Bio import SeqIO, AlignIO, Alphabet
 import numpy as np
-import os, sys, argparse
+import os, sys, argparse, gzip, tempfile
+
+###### oneline
+
+def get_cmd_oneliner():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-i", "--input", action="store", dest="input", help="input fasta file")
+    parser.add_argument("-o", "--output", action="store", dest="output", help="output fasta file")
+    params = parser.parse_args()
+
+    return params
+
+def fasta_oneline():
+    params = get_cmd_oneliner()
+
+    if params.input != params.output:
+        with open(params.output, "w") as outf:
+            for rec in BioUtils.BUio.read_fastabioit(params.input):
+                outf.write(">{} {}\n{}\n".format(rec.id, rec.description, str(rec.seq)))
+    else:
+        tmp, tmppath = tempfile.mkstemp()
+        with os.fdopen(tmp, 'w') as outf:
+            for rec in BioUtils.BUio.read_fastabioit(params.input):
+                outf.write(">{} {}\n{}\n".format(rec.id, rec.description, str(rec.seq)))
+                
+        with open(tmppath, "r") as inf, open(params.output, "w") as outf:
+            for line in inf:
+                outf.write(line)
+    
+    sys.exit(0)
+
+
+
+###### split
 
 def get_cmd_split():
     parser = argparse.ArgumentParser()
@@ -11,6 +44,7 @@ def get_cmd_split():
     parser.add_argument("-o", "--output", action="store", dest="output", help="output fasta file")
     parser.add_argument("-p", "--percentage", action="store", dest="percentage", help="percentage of proteins", type=float)
     parser.add_argument("-n", "--number", action="store", dest="number", help="first n proteins", type=int)
+    parser.add_argument("-s", "--shuffle", action="store_true", dest="shuffling", help="shuffle sequences before split")
     params = parser.parse_args()
 
     if params.percentage is not None and params.number is not None:
@@ -23,20 +57,47 @@ def get_cmd_split():
 def fasta_split():
     params = get_cmd_split()
 
-    if params.percentage:
-        dfasta = BioUtils.BUio.read_fastabio(params.input)
-        proteins = list(dfasta.keys())
-        length = len(proteins)
-        nb = int((length * params.percentage) / 100)
-    else:
-        nb = params.number
-
-    with open(params.output, "w") as outf:
-        cnt = 0
+    if params.shuffling:
+        proteins = list()
         for rec in BioUtils.BUio.read_fastabioit(params.input):
-            if cnt < nb:
-                SeqIO.write(rec, outf, "fasta")
-                cnt += 1
+            proteins.append(rec.id)
+        np.random.shuffle(proteins)
+        if params.percentage:
+            length = len(proteins)
+            nb = int((length * params.percentage) / 100)
+        else:
+            nb = params.number
+            
+        proteins = set(proteins[:nb])
+        with open(params.output, "w") as outf:
+            for rec in BioUtils.BUio.read_fastabioit(params.input):
+                if rec.id in proteins:
+                    SeqIO.write(rec, outf, "fasta")
+                
+    else:
+        if params.percentage:
+            length = 0
+            ext = os.path.splitext(params.input)
+            if ext in [".gzip", ".gz"]:
+                with gzip.open(params.input, "rt") as inf:
+                    for line in inf:
+                        if line[0] == ">":
+                            length += 1
+            else:
+                with open(params.input, "r") as inf:
+                    for line in inf:
+                        if line[0] == ">":
+                            length += 1
+            nb = int((length * params.percentage) / 100)
+        else:
+            nb = params.number
+
+        with open(params.output, "w") as outf:
+            cnt = 0
+            for rec in BioUtils.BUio.read_fastabioit(params.input):
+                if cnt < nb:
+                    SeqIO.write(rec, outf, "fasta")
+                    cnt += 1
     
     sys.exit(0)
 
@@ -67,6 +128,8 @@ def get_cmd_convert():
     parser = argparse.ArgumentParser()
     parser.add_argument("-i", "--input", action="store", dest="input", help="input sequence file")
     parser.add_argument("-o", "--outdir", action="store", dest="output", help="output sequence file")
+    parser.add_argument("-a", "--alphabet", action="store", dest="alphabet", help="sequences are either dna, rna or protein sequences")
+    parser.add_argument("--is_msa", action="store_true", dest="is_msa", help="input file is a multiple sequence alignment")
     parser.add_argument("--input_format", action="store", dest="input_format", help="input format")
     parser.add_argument("--output_format", action="store", dest="output_format", help="output format ")
     params = parser.parse_args()
@@ -76,9 +139,24 @@ def get_cmd_convert():
 def fasta_convert():
     params = get_cmd_convert()
     
-    with open(params.input, "r") as inf, open(params.output, "w") as outf:
-        for rec in SeqIO.parse(inf, params.input_format):
-            SeqIO.write(rec, outf, params.output_format)
+    alphabet = {"dna": Alphabet.generic_dna,
+                "rna": Alphabet.generic_rna,
+                "protein": Alphabet.generic_protein}
+    
+    if params.is_msa:
+        
+        with open(params.input, "r") as inf, open(params.output, "w") as outf:
+            if params.alphabet is not None:
+                msa = AlignIO.read(inf, params.input_format, alphabet = alphabet[params.alphabet])
+            else:
+                msa = AlignIO.read(inf, params.input_format)
+            AlignIO.write(msa, outf, params.output_format)
+            
+    else:
+    
+        with open(params.input, "r") as inf, open(params.output, "w") as outf:
+            for rec in SeqIO.parse(inf, params.input_format):
+                SeqIO.write(rec, outf, params.output_format)
     
     sys.exit(0)
 

@@ -15,6 +15,7 @@ def usage():
 Please use hcatk with one of the following argument:
 - 'fasta_shuffle': to shuffle a fasta sequence
 - 'fasta_split'  : to split a fasta file (either by percentage or by number of sequence)
+- 'fasta_1line'  : to put sequence on one line
 - 'fasta_batch'  : to create batch of fasta
 - 'fasta_convert': to convert sequence format
 - 'help'     : to display this help message
@@ -29,6 +30,7 @@ fnc_methods = {
     "fasta_split": BioUtils.BUscripts.fasta_split, 
     "fasta_batch": BioUtils.BUscripts.fasta_batch, 
     "fasta_convert": BioUtils.BUscripts.fasta_convert,
+    "fasta_1line"  :BioUtils.BUscripts.fasta_oneline,
     }
     
 def print_exit():
@@ -42,7 +44,7 @@ def main():
     if len(sys.argv) < 2:
         print("Missing program argument")
         ext = print_exit()
-    elif sys.argv[1] not in ["fasta_shuffle", "fasta_split", "fasta_batch", "fasta_convert", "help"]:
+    elif sys.argv[1] not in fnc_methods:
         print("Program argument '{}' not recognized".format(sys.argv[1]))
         ext = print_exit()
     elif sys.argv[1] == "help":
