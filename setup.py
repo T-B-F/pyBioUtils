@@ -35,6 +35,8 @@ setup(name='pybioutils',
     packages=find_packages(exclude=["BioUtils/bin/", "src/"]),
     include_package_data=True,
     install_requires=['biopython>=1.68',
-                      'numpy'],
+                      'numpy',
+                      'matplotlib'],
+
     zip_safe=False,
 )
