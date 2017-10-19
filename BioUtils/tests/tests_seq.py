@@ -14,10 +14,9 @@ class TestBUseq(unittest.TestCase):
         self.msa_sequences = ["------WCRLCMQNHC----T-HGR-H-LCMQN---",
                               "R----LIMV-L-I-V----RGTY"]
         
-
-
-
     def test_compute_pos_msa2seq(self):
+        """ check convertion positions between seq and msa
+        """
         self.setup()
         for seq in self.msa_sequences:
             seq_ = seq.replace("-", "")
@@ -30,6 +29,8 @@ class TestBUseq(unittest.TestCase):
                 self.assertEqual(t_seq_, t_seq)
 
     def test_compute_pos_seq2msa(self):
+        """ check convertion positions between msa and seq
+        """
         self.setup()
         for seq in self.msa_sequences:
             seq_ = seq.replace("-", "")
@@ -42,6 +43,8 @@ class TestBUseq(unittest.TestCase):
                 self.assertEqual(t_seq_, t_seq)
 
     def test_compute_offset_pos(self):
+        """ check positions
+        """
         self.setup()
         seq = self.msa_sequences[0]
         pos = BUseq.compute_offset_pos(seq, 0)
