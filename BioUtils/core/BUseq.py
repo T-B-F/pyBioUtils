@@ -28,6 +28,9 @@ def compute_offset_pos(seq, pos):
         the position in the MSA
     """
     
+    nogap_seq = transform_seq(seq)
+    assert(pos >= 0 and pos < len(nogap_seq))
+
     maps = dict()
     cnt = 0
     maxi = 0
