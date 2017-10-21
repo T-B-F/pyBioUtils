@@ -8,7 +8,7 @@ from BioUtils import BUio
 
 class TestBUseq(unittest.TestCase):
 
-    def setup(self):
+    def setUp(self):
         self.targets = [("fasta/msa_test1.fa", "fasta/seq_test1.fa", 3, 102),
                         ("fasta/msa_test2.fa.gz", "fasta/seq_test2.fa", 3, 102)]
 
@@ -17,7 +17,6 @@ class TestBUseq(unittest.TestCase):
     def test_msaio(self):
         """ check msa reading
         """
-        self.setup()
         # check full reading
         for msafilename, seqfilename, nb_seq, len_seq in self.targets:
             msa_fasta = BUio.read_fastabio(msafilename)

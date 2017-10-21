@@ -8,7 +8,7 @@ from BioUtils import BUseq
 
 class TestBUseq(unittest.TestCase):
 
-    def setup(self):
+    def setUp(self):
         self.bad_sequence = "IGEGHPWC-RLCMQN?HCGAD!RHGR*HCQMM."
         self.sequence = "IGEGHPWCRLCMQNHCGADRHGRHCQMM" 
         self.msa_sequences = ["------WCRLCMQNHC----T-HGR-H-LCMQN---",
@@ -17,7 +17,6 @@ class TestBUseq(unittest.TestCase):
     def test_compute_pos_msa2seq(self):
         """ check convertion positions between seq and msa
         """
-        self.setup()
         for seq in self.msa_sequences:
             seq_ = seq.replace("-", "")
             for i in range(10):
@@ -31,7 +30,6 @@ class TestBUseq(unittest.TestCase):
     def test_compute_pos_seq2msa(self):
         """ check convertion positions between msa and seq
         """
-        self.setup()
         for seq in self.msa_sequences:
             seq_ = seq.replace("-", "")
             for i in range(10):
@@ -45,7 +43,6 @@ class TestBUseq(unittest.TestCase):
     def test_compute_offset_pos(self):
         """ check positions
         """
-        self.setup()
         seq = self.msa_sequences[0]
         pos = BUseq.compute_offset_pos(seq, 0)
         self.assertEqual(("W", 6), (seq[pos], pos))
@@ -66,7 +63,6 @@ class TestBUseq(unittest.TestCase):
 
     def test_transform_seq(self):
         """ check bad characters in MSA are remove """
-        self.setup()
         new_seq = BUseq.transform_seq(self.bad_sequence)
         self.assertEqual(new_seq, self.sequence)
 
