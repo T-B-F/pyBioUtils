@@ -28,7 +28,8 @@ def check_dim(*args):
         #if args[i] != list() and args[i+1] != list():
             #assert len(args[i]) == len(args[i+1]), "Different size between parameters"
         
-def plot_scatter_hist(data_x, data_y, alpha=0.8, labels=list(), xlabel="", ylabel="", savefig=None, show=True):
+def plot_scatter_hist(data_x, data_y, alpha=0.8, labels=list(), xlabel="", ylabel="", savefig=None, show=True,
+                      plot_corr=False):
     """ combine a scatter plot with two histograms, one for each of the axis
     """
     check_dim(data_x, data_y, labels)
@@ -87,6 +88,19 @@ def plot_scatter_hist(data_x, data_y, alpha=0.8, labels=list(), xlabel="", ylabe
             k += 1
             if k >= len(colors):
                 k = 0
+
+    if plot_corr:
+        k = 0
+        for i in range(len(data_x)):
+            x = np.linspace(min(data_x[i]), max(data_x[i]), 100)
+            cor, pval = scst.pearsonr(data_x[i], data_y[i])
+            slope, intercept, r_value, p_value, std_err = scst.linregress(data_x[i], data_y[i])
+            r2 = r_value ** 2
+            print(i, cor, r2)
+            f = lambda x , a, b : x * a + b
+            y = f(x, slope, intercept)
+            axScatter.plot(x, y, linestyle="-.", color=colors[k])
+        k += 1
     
     xsize = max(len(str(int(xmax))), len(str(int(xmin)))) - 1 
     ysize = max(len(str(int(ymax))), len(str(int(ymin)))) - 1

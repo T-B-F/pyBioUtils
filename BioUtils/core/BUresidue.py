@@ -106,9 +106,9 @@ def AA3toAA1(aa, verbose=True):
     elif (aa == 'HSP' ) : # protonated histidine
         return "H"     
     elif (aa == 'MSE' ) : # selenomethionine
-        return "X" 
+        return "M" 
     elif (aa == 'SEC' ) : # selenocysteine
-        return "X"     
+        return "C"     
     elif (aa == 'SEP' ) : # phosphoserine
         return "S"     
     elif (aa == 'TPO' ) : # phosphothreonine
