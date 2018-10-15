@@ -328,7 +328,13 @@ def hydrophobicity_scale(name=""):
             "K+":   1.81,
         }
     }
+    if name not in scales:
+        print("Scale {} not found".format(name))
+        print("Use of these: {}".format(", ".join(scales.keys())))
+        return
     return scales[name]
+
+
 def AA3(mode="all"):
     if mode in _AA3:
         return _AA3[mode]
