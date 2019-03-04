@@ -1,4 +1,6 @@
 biopython>=1.68
 numpy
+scipy
 matplotlib
+
 

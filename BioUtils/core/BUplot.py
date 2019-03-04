@@ -3,6 +3,8 @@ import scipy.stats as scst
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 from matplotlib.ticker import NullFormatter
+from scipy.spatial.distance import pdist
+from scipy.cluster.hierarchy import linkage, dendrogram
 
 def simpleaxis(ax):
     ax.spines['top'].set_visible(False)
@@ -248,8 +250,11 @@ def clustermap(x, draw_top=True, draw_left=True, colorbar_pad=0.5, cmap=plt.cm.v
         z = x
     if draw_top:
         z = z[:, dg1['leaves']]
-        
-    ymax = ax_dendtop.get_xlim()[1]
+    
+    if draw_top:
+        ymax = ax_dendtop.get_xlim()[1]
+    else:
+        ymax = ax_dendleft.get_xlim()[1]
 
     if draw_left:
         im = ax_heatmap.imshow(z[::-1], aspect='auto', cmap=cmap, interpolation='nearest',
