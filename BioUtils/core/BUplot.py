@@ -6,6 +6,16 @@ from matplotlib.ticker import NullFormatter
 from scipy.spatial.distance import pdist
 from scipy.cluster.hierarchy import linkage, dendrogram
 
+
+def simple_and_outward(ax, out=10):
+    simpleaxis(ax)
+    outward_spines(ax, out)
+
+def outward_spines(ax, out=10):
+    ax.spines["left"].set_position(("outward", out))
+    ax.spines["bottom"].set_position(("outward", out))
+
+
 def simpleaxis(ax):
     ax.spines['top'].set_visible(False)
     ax.spines['right'].set_visible(False)
