@@ -14,3 +14,4 @@ script:
     - cd BioUtils/tests/
     - python tests_seq.py
     - python tests_io.py
+    - python tests_residue.py
