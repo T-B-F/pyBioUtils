@@ -4,7 +4,6 @@ import os, gzip
 from Bio import SeqIO
 from Bio.SeqRecord import SeqRecord
 from Bio.Seq import Seq
-from Bio.Alphabet import generic_protein
 from .BUseq import transform_seq
 
 def msa2flat(dfasta):
@@ -24,7 +23,7 @@ def msa2flat(dfasta):
     for prot in dfasta:
         seqobj  = dfasta[prot]
         seq = str(seqobj.seq)
-        new_seq = Seq(transform_seq(seq), generic_protein)
+        new_seq = Seq(transform_seq(seq))
         record = SeqRecord(new_seq, seqobj.id, seqobj.name, seqobj.description)
         dfasta_flat[prot] = record
     return dfasta_flat

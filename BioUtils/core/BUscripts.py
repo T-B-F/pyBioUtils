@@ -1,7 +1,7 @@
 #!usr/bin/env python
 
 import BioUtils
-from Bio import SeqIO, AlignIO, Alphabet
+from Bio import SeqIO, AlignIO
 import numpy as np
 import os, sys, argparse, gzip, tempfile
 
@@ -199,7 +199,6 @@ def get_cmd_msaconvert():
     parser = argparse.ArgumentParser()
     parser.add_argument("-i", "--input", action="store", dest="input", help="input sequence file")
     parser.add_argument("-o", "--outdir", action="store", dest="output", help="output sequence file")
-    parser.add_argument("-a", "--alphabet", action="store", dest="alphabet", help="sequences are either dna, rna or protein sequences")
     parser.add_argument("--input_format", action="store", dest="input_format", help="input format")
     parser.add_argument("--output_format", action="store", dest="output_format", help="output format ")
     params = parser.parse_args()
@@ -209,15 +208,8 @@ def get_cmd_msaconvert():
 def msa_convert():
     params = get_cmd_msaconvert()
     
-    alphabet = {"dna": Alphabet.generic_dna,
-                "rna": Alphabet.generic_rna,
-                "protein": Alphabet.generic_protein}
-            
     with open(params.input, "r") as inf, open(params.output, "w") as outf:
-        if params.alphabet is not None:
-            msa = AlignIO.read(inf, params.input_format, alphabet = alphabet[params.alphabet])
-        else:
-            msa = AlignIO.read(inf, params.input_format)
+        msa = AlignIO.read(inf, params.input_format)
         AlignIO.write(msa, outf, params.output_format)
     
     sys.exit(0)
